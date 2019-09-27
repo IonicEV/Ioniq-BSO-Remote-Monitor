@@ -3,17 +3,27 @@
 #define ENABLE_TEST_ELM327  1   //If enabled, ELM327 interaction is bypassed
 #define ENABLE_TEST_OBD     1   //If enabled, OBD communication is bypassed
 #define IONIQ_MODEL IONIQ_EV17  // Refer to IONIQ_Model enum in Ionic.h to pick your model
+#define ENABLE_HELTEC_WIFI_Kit_32  //If defined, enable for compile HELTEC_WIFI_Kit_32
 
-#include "ESP32ELM327Client.h"
-#define LOCAL_NAME "ESP32DEV1" // host_name and BT local_name for your ESP32
-#define ADDRESS  "00:1D:A5:02:C3:22"  //remote BT OBDII bluetooth address (you can find it by paiting your OBDII with Window sand then look at the connection properties)
+#ifdef ENABLE_HELTEC_WIFI_Kit_32
+#include <Wire.h>
+#include <OLED.h>
+#define OLED_RST 16
+#define OLED_SDA 4
+#define OLED_SCL 15
+#endif
 
-// buffer length used by the app.
 #define MQTT_BUF_LEN 256
 #define RECV_BUF_LEN 128
 #define SEND_BUF_LEN 1024
 
-
+#include "ESP32ELM327Client.h"
+#define LOCAL_NAME "ESP32KIT321" //"ESP32DEV1" //"ESP32KIT321"  //"ESP32KIT322"
+//#define ADDRESS  "00:1D:A5:02:C3:22" // ESP32DEV1
+#define ADDRESS  "AA:BB:CC:11:22:33" // ESP32KIT321
+//#define ADDRESS  "00:1D:A5:1E:DD:12" // ESP32KIT322
+//uint8_t address[6]  = {0x00, 0x1D, 0xA5, 0x02, 0xC3, 0x22};
+//uint8_t address[6]  = {0xAA, 0xBB, 0xCC, 0x11, 0x22, 0x33};
 
 // ***************************************************************************
 // IMPORTANT: Enable wifi and OBD fot test or work in Ioniq

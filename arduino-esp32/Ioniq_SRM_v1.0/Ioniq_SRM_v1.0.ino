@@ -34,6 +34,10 @@ WiFiClientSecure secureClient;
 WiFiUDP ntpUDP;
 NTPClient timeClient(ntpUDP, NTP_SERVER, (NTP_DST ? NTP_ZONE * 3600 + 3600 : NTP_ZONE * 3600)); //Configure your NTP_ZONE in Config.h
 
+#ifdef ENABLE_HELTEC_WIFI_Kit_32
+OLED display(OLED_SDA, OLED_SCL);
+#endif
+
 char sendBuffer[SEND_BUF_LEN];
 char recvBuffer[RECV_BUF_LEN];
 
@@ -48,11 +52,35 @@ int sleepTime = SLEEP_TIME;
 int ResetCount = 0;
 int timeInitialEpoch;
 
+char bsoMsg[16];
+char cecInitialMsg[16];
+char cecDecimalMsg[16];
+
 // ***************************************************************************
 // SETUP
 // ***************************************************************************
 void setup()  {
   Serial.begin(115200);
+  // ***************************************************************************
+  // Setup: OLED Screen Wifi Kit_32
+  // ***************************************************************************
+#ifdef ENABLE_HELTEC_WIFI_Kit_32
+  pinMode(OLED_RST, OUTPUT);
+  digitalWrite(OLED_RST, LOW);   // turn D2 low to reset OLED
+  delay(50);
+  digitalWrite(OLED_RST, HIGH);   // while OLED is running, must set D2 in high
+  display.begin();
+
+  // Intro screen
+  display.print("Ioniq SOC Remote", 0);
+  display.print("     v ", 1);
+  display.print(versionSoft, 1, 8);
+  display.print("  by WE Koyote  ", 3);
+  delay(4000);
+  //display.clear();
+#endif
+
+
   //  This is here to force the ESP32 to reset the WiFi and initialise correctly.
   WiFi.disconnect(true);
   delay(1000);
@@ -62,12 +90,18 @@ void setup()  {
    
   // Start WiFi
 restart:  
+#ifdef ENABLE_HELTEC_WIFI_Kit_32
+    display.print("WiFi start      ", 2);
+#endif
   WiFi.disconnect();
   WiFi.mode(WIFI_STA);  
   delay(1000);
   WiFi.begin(WIFI_SSID, WIFI_PSW);
   if (WiFi.waitForConnectResult() != WL_CONNECTED)  {
     Serial.println("WiFi connect failed. Restarting ...");
+#ifdef ENABLE_HELTEC_WIFI_Kit_32
+    display.print("WiFi failed ... ", 2);
+#endif
     delay(10000);
     goto restart;
   }
@@ -75,6 +109,9 @@ restart:
   Serial.print("IP address: ");
   Serial.println(WiFi.localIP());
   // check WiFi
+#ifdef ENABLE_HELTEC_WIFI_Kit_32
+  display.print("WiFi check      ", 2);
+#endif
   Serial.print("DNS server: ");Serial.println(WiFi.dnsIP());
   IPAddress ipAddress;
   int res = WiFi.hostByName(NTP_SERVER, ipAddress);
@@ -88,8 +125,14 @@ restart:
   else { Serial.println("WiFi failed. Restarting ..."); goto restart; }
   timeClient.begin();
   if (!SynchronizeTime()) { Serial.println("SynchronizeTime() failed. Restarting ..."); goto restart; }
+#ifdef ENABLE_HELTEC_WIFI_Kit_32
+    display.print("WiFi connected ", 2);
+#endif
 
   mqttClient.setServer(MQTT_SERVER, MQTT_PORT);
+#ifdef ENABLE_HELTEC_WIFI_Kit_32
+  display.print("Connecting....   ", 3);
+#endif
 
   clientOBD = new ESP32ELM327Client(ADDRESS, LOCAL_NAME);
 
@@ -111,8 +154,16 @@ restart:
   }
   Serial.println("OBD connected");
 
+#ifdef ENABLE_HELTEC_WIFI_Kit_32
+  display.print("  OBD Connected  ", 3);
+#endif
+
   delay(500);
   clientOBD->initialize();
+
+#ifdef ENABLE_HELTEC_WIFI_Kit_32
+  display.print("                ", 1);
+#endif
 
 #ifdef ENABLE_DDNS
   EasyDDNS.service(DDNS_SERVICE);
@@ -138,6 +189,10 @@ void loop() {
     clientOBD->connect();
   }
 
+#ifdef ENABLE_HELTEC_WIFI_Kit_32
+  display.print("OBD update      ", 2);
+#endif
+
   Serial.println("======================");
   ioniq->update(); // get OBD status update
   // *******************************************************************************
@@ -151,8 +206,21 @@ void loop() {
     // Start the construction of the MQTT message
     // *******************************************************************************
 
+    dtostrf(ioniq->bsoDecimal, 2, 1, bsoMsg);
+    dtostrf(ioniq->cecDecimal, 2, 1, cecDecimalMsg);
+    dtostrf(ioniq->cecInitial, 2, 1, cecInitialMsg);
+
+#ifdef ENABLE_HELTEC_WIFI_Kit_32
+    delay(1000);
+    display.print(cecInitialMsg, 1, 0);
+    display.print(cecDecimalMsg, 1, 8);
+    display.print("Publish         ", 2);
+    display.print("  Battery: ", 3);
+    display.print(bsoMsg, 3, 11);
+#endif
     createMQTTmessage(sendBuffer, MQTT_BUF_LEN, ioniq);
     publishMQTTMessage(sendBuffer);
+
 
     if (ioniq->getStatus() && ioniq->isCharging() && timeInitial == "") { // consume or charge battery? Surely there are better ways to do it. Sorry.
       timeClient.update();
@@ -172,6 +240,10 @@ void loop() {
         String currentTime = getTimeStamp(timeClient.getEpochTime());
         String totalTime = getTimeDifference(timeClient.getEpochTime() - timeInitialEpoch);
         createTelegram(sendBuffer, SEND_BUF_LEN, ioniq, timeInitial, currentTime, totalTime);
+#ifdef ENABLE_HELTEC_WIFI_Kit_32
+        delay(1000);
+        display.print("Send Telegram   ", 2);
+#endif
         telegramSend(sendBuffer);
       }
       ioniq->resetToCharged();
@@ -187,6 +259,10 @@ void loop() {
   }
 
   Serial.print("Sleeping ...");
+#ifdef ENABLE_HELTEC_WIFI_Kit_32
+    delay(1000);
+    display.print("Sleeping ...    ", 2);
+#endif
   delay(sleepTime);
   Serial.println("Wake up!");
 
@@ -364,22 +440,27 @@ char* createTelegram(char *dest, int len, Ioniq *ioniq, String &timeInitial, Str
 // ***************************************************************************
 //
 void telegramSend(char *telegramText) {
-  Serial.println("Sending Telegram...");
-  if (secureClient.connect(TELEGRAM_SERVER, 443)) {
-    Serial.print(strlen(telegramText));
-    Serial.print(":");
-    Serial.println(telegramText);
-    secureClient.println(telegramText);
-    delay(1000);
-    secureClient.setTimeout(5000);
-    int recv = secureClient.readBytesUntil(',', recvBuffer, RECV_BUF_LEN);
-    if (recv == 0 && strcmp(recvBuffer, "{\"ok\":true") != 0) {
-      Serial.println("Send Telegram Error!! "); Serial.println(recvBuffer);
+  int retry = 2;
+  do {
+    Serial.print("Sending Telegram..."); Serial.println(retry);
+    if (secureClient.connect(TELEGRAM_SERVER, 443)) {
+      Serial.print(strlen(telegramText));
+      Serial.print(":");
+      Serial.println(telegramText);
+      secureClient.println(telegramText);
+      delay(1000);
+      secureClient.setTimeout(5000);
+      int recv = secureClient.readBytesUntil(',', recvBuffer, RECV_BUF_LEN);
+      if (recv == 0 && strcmp(recvBuffer, "{\"ok\":true") != 0) {
+        Serial.println("Send Telegram Error!! "); Serial.println(recvBuffer);
+      }
+      secureClient.stop();
+      retry = 0;
+    } else {
+      Serial.println("Connect to Telegram FAILED!!");
+      delay(5000);
     }
-    secureClient.stop();
-  } else {
-    Serial.println("Connect to Telegram FAILED!!");
-  }
+  } while(--retry > 0);
 }
 
 // ***************************************************************************
@@ -440,6 +521,9 @@ String getTimeDifference(int difference) {
 
 void stopLoop(char *message) {
   Serial.println(message);
+#ifdef ENABLE_HELTEC_WIFI_Kit_32
+  display.print(message, 3);
+#endif
   while (1) {
     delay(1000);
   }
