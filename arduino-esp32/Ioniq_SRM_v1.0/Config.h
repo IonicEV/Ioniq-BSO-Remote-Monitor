@@ -3,7 +3,7 @@
 #define ENABLE_TEST_ELM327  1   //If enabled, ELM327 interaction is bypassed
 #define ENABLE_TEST_OBD     1   //If enabled, OBD communication is bypassed
 #define IONIQ_MODEL IONIQ_EV17  // Refer to IONIQ_Model enum in Ionic.h to pick your model
-#define ENABLE_HELTEC_WIFI_Kit_32  //If defined, enable for compile HELTEC_WIFI_Kit_32
+//#define ENABLE_HELTEC_WIFI_Kit_32  //If defined, enable for compile HELTEC_WIFI_Kit_32
 
 #ifdef ENABLE_HELTEC_WIFI_Kit_32
 /*
