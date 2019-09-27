@@ -6,6 +6,21 @@
 #define ENABLE_HELTEC_WIFI_Kit_32  //If defined, enable for compile HELTEC_WIFI_Kit_32
 
 #ifdef ENABLE_HELTEC_WIFI_Kit_32
+/*
+Install "ESP8266-OLED Display Library" by Klar Systems
+You would need to make adjustments in the OLED.cpp init_OLED() for specific screen resolution
+The following config changes would work on Heltec 8266 and ESP32 variants 128x32 and 128x64
+OLED.cpp
+find line: sendcommand(0x3F);
+replace with: sendcommand(0x1F);
+
+find line: sendcommand(0x12);;
+replace with: sendcommand(0x02);
+
+library.properties
+find line: architectures=esp8266
+replace with: architectures=esp8266,esp32
+*/
 #include <Wire.h>
 #include <OLED.h>
 #define OLED_RST 16
