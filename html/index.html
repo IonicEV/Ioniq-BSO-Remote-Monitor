@@ -25,11 +25,11 @@
         // NOTE: Adjust settings below to match your configuration		
         //var isKm=1, maxRangeKm=63, maxRangeMiles=39; // Ioniq PHEV 2017-2019
         var isKm=0, maxRangeKm=280, maxRangeMiles=170; // Ioniq EV   2017-2019
- 		mqttUser = 'ioniq';
-        mqttPsw = 'my-pws';
-		mqttTopic = 'ioniq/bso';
-        mqttServer = 'soldier.cloudmqtt.com';
-        mqttPort = 38044;
+ 		var mqttUser = 'ioniq';
+        var mqttPsw = 'my-psw';
+		var mqttTopic = 'ioniq/bso';
+        var mqttServer = 'soldier.cloudmqtt.com';
+        var mqttPort = 38044;
 
         var g1, gauge1;
         var fish=0;
@@ -45,10 +45,10 @@
 					decimals: 0,
 					pointer: true,
 					shadowVerticalOffset: 8,
-					customSectors :[{"lo":0,"hi":maxRange/4,"color":"#7C0B1A"},
-					{"lo":maxRange/4,"hi":maxRange/2,"color":"#2623BC"},
-					{"lo":maxRange/2,"hi":maxRange/2+maxRange/4,"color":"#5E37DD"},				   
-					{"lo":maxRange/2+maxRange/4,"hi":maxRange,"color":"#42bee0"}],
+					customSectors :[{"lo":0,"hi":maxRange*0.25,"color":"#7C0B1A"},
+					{"lo":maxRange*0.25,"hi":maxRange*0.5,"color":"#2623BC"},
+					{"lo":maxRange*0.5,"hi":maxRange*0.75,"color":"#5E37DD"},				   
+					{"lo":maxRange*0.75,"hi":maxRange,"color":"#42bee0"}],
 					levelColorsGradient: true,	 	  
 					shadowOpacity: 1.7,
 					pointerOptions: {
@@ -66,11 +66,6 @@
 					title: "",
 					label: isKm ? "km" : "mi"
 		    });
-
-        function cargarDiv(div,url){
-        	$(div).load(url);
-        }
-          
 
         // called when the client connects
         function onConnect() {
@@ -213,7 +208,7 @@
 		<div id="date" style=" color:#96D8F7; text-anchor: middle; text-align:left; font-family: arial; font-size: 12px; fill-opacity: 1; position:absolute; top:650px; left:20px; width:100px; height:14px; border-style: none;"></div>
         <div id="g1" style="color:#96D8F7; position:absolute; top:250px; left:5px;  width:100px; height:100px; border-style: none;"></div>
         <div id="t1" style="position:absolute; top:285px; left:80px; width:260px; fill-opacity:.90; font-family: Arial, serif; font-size: 34px; color:#999999; font-weight: bold">
-            <svg id="fillgauge1" width="97%" height="240"></svg>
+			<svg id="fillgauge1" width="97%" height="240"></svg>
         <div>
         </p>
         <script language="JavaScript">
