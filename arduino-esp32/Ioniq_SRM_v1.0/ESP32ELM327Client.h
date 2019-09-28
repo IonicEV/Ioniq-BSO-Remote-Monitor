@@ -58,7 +58,7 @@ class ESP32ELM327Client : public EML327Client {
     _connected =  static_cast<BluetoothSerial*>(_elm327)->connected();
     if (!_connected) {
       //try to remove paring info and repeat
-      static_cast<BluetoothSerial*>(_elm327)->remove_bond_device(_remote_address);
+      static_cast<BluetoothSerial*>(_elm327)->removePairedDevice(_remote_address);
       static_cast<BluetoothSerial*>(_elm327)->connect(_remote_address);
       _connected =  static_cast<BluetoothSerial*>(_elm327)->connected();
     }
