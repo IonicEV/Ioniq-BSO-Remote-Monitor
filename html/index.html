@@ -21,139 +21,146 @@
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     </head>
-    <script id="source" language="javascript" type="text/javascript">		
-        var g1, gauge1, volts, ampers,power, kms, charger, endcharge;
-        var fish=0;
-        window.onload = function(){
-										var g1 = new JustGage({
-												id: "g1", 
-												value:fish,
-												counter: true, 
-												decimals: 0,
-												pointer: true,
-												shadowVerticalOffset: 8,
-												customSectors :[{"lo":0,"hi":15,"color":"#7C0B1A"},
-												{"lo":10,"hi":25,"color":"#2623BC"},
-												{"lo":25,"hi":50,"color":"#5E37DD"},				   
-												{"lo":50,"hi":63,"color":"#42bee0"}],
-												levelColorsGradient: true,	 	  
-												shadowOpacity: 1.7,
-												pointerOptions: {
-												toplength: -15,
-												bottomlength: 10,
-												bottomwidth: 2,
-												color: '#595960',
-												stroke: '#ffffff',
-												stroke_width: 1,
-												stroke_linecap: 'round'
-												},
-												valueFontColor: "#96D8F7",
-												min: 0,
-												max: 63, 
-												title: "",
-												label: "Kms."
-									 });
+    <script id="source" language="javascript" type="text/javascript">
+        // NOTE: Adjust settings below to match your configuration		
+        var isKm=0, maxRangeKm=280, maxRangeMiles=170;
+ 		mqttUser = 'ioniq';
+        mqttPsw = 'my-pws';
+		mqttTopic = 'ioniq/bso';
+        mqttServer = 'soldier.cloudmqtt.com';
+        mqttPort = 38044;
 
+        var g1, gauge1;
+        var fish=0;
+		var clientId = "ws" + Math.random();
+        var client = new Paho.MQTT.Client(mqttServer, mqttPort, clientId);
+  
+        window.onload = function(){
+            var maxRange = isKm ? maxRangeKm : maxRangeMiles;
+			var g1 = new JustGage({
+					id: "g1", 
+					value:fish,
+					counter: true, 
+					decimals: 0,
+					pointer: true,
+					shadowVerticalOffset: 8,
+					customSectors :[{"lo":0,"hi":maxRange/4,"color":"#7C0B1A"},
+					{"lo":maxRange/4,"hi":maxRange/2,"color":"#2623BC"},
+					{"lo":maxRange/2,"hi":maxRange/2+maxRange/4,"color":"#5E37DD"},				   
+					{"lo":maxRange/2+maxRange/4,"hi":maxRange,"color":"#42bee0"}],
+					levelColorsGradient: true,	 	  
+					shadowOpacity: 1.7,
+					pointerOptions: {
+					toplength: -15,
+					bottomlength: 10,
+					bottomwidth: 2,
+					color: '#595960',
+					stroke: '#ffffff',
+					stroke_width: 1,
+					stroke_linecap: 'round'
+					},
+					valueFontColor: "#96D8F7",
+					min: 0,
+					max: isKm ? maxRangeKm : maxRangeMiles, 
+					title: "",
+					label: isKm ? "km" : "mi"
+		    });
 
         function cargarDiv(div,url){
-        $(div).load(url);
+        	$(div).load(url);
         }
           
-		usuario = 'ioniq';
-        contrasena = '7261kpp';
-		topic = 'ioniq/bso';
-		var clientId = "ws" + Math.random();
-        var client = new Paho.MQTT.Client("m24.cloudmqtt.com", 34357, clientId);
-  
+
         // called when the client connects
         function onConnect() {
-										// Once a connection has been made, make a subscription and send a message.
-										console.log("onConnect");
-										client.subscribe("#");
-								 }
+			// Once a connection has been made, make a subscription and send a message.
+			console.log("onConnect");
+			client.subscribe("#");
+		}
         
         // called when the client loses its connection
         function onConnectionLost(responseObject) {
-										if (responseObject.errorCode !== 0) {
-											console.log("onConnectionLost:", responseObject.errorMessage);
-											setTimeout(function() { client.connect() }, 5000);
-										}
-								}
+			if (responseObject.errorCode !== 0) {
+				console.log("onConnectionLost:", responseObject.errorMessage);
+				setTimeout(function() { client.connect() }, 5000);
+			}
+		}
         
 
 							
         function onMessageArrived(message) {
-        if (message.destinationName == topic) {
-									
-											var d = new Date();
-											var hours = d.getHours();
-											var mins = d.getMinutes();
-											var secs = d.getSeconds();
-											if (hours<10) {hours="0" + hours;}
-											if (mins<10) {mins="0" + mins;}
-											if (secs<10) {secs="0" + secs;}
-											document.getElementById("date").innerHTML = hours + ":" + mins + ":"+ secs;
+        	if (message.destinationName == mqttTopic) {
+				var d = new Date();
+				var hours = d.getHours();
+				var mins = d.getMinutes();
+				var secs = d.getSeconds();
+				if (hours<10) {hours="0" + hours;}
+				if (mins<10) {mins="0" + mins;}
+				if (secs<10) {secs="0" + secs;}
+				document.getElementById("date").innerHTML = hours + ":" + mins + ":"+ secs;
+	
+				parsed = JSON.parse(message.payloadString);
+				gauge1.update(parsed.bso);
+				document.getElementById("volts").innerHTML=parsed.v+' V';		
+				document.getElementById("ampers").innerHTML=parsed.i+' A';
+				document.getElementById("power").innerHTML=parsed.p+' kW';
+				document.getElementById("temp").innerHTML="T.Bat: "+parsed.t+'º';
+				document.getElementById("tempMax").innerHTML="T. Max: "+parsed.tu+'º';
+				document.getElementById("tempMin").innerHTML="T. Min: "+parsed.tl+'º';
+				var addRange = parsed.k;
+				addRange = isKm ? addRange : (addRange / 1.60934);
+				g1.refresh(addRange);
 								
-											parsed = JSON.parse(message.payloadString);
-											gauge1.update(parsed.bso);
-											document.getElementById("volts").innerHTML=parsed.v+' V';		
-											document.getElementById("ampers").innerHTML=parsed.i+' A';
-											document.getElementById("power").innerHTML=parsed.p+' kW';
-											document.getElementById("temp").innerHTML="T.Bat: "+parsed.t+'º';
-											document.getElementById("tempMax").innerHTML="T. Max: "+parsed.tu+'º';
-											document.getElementById("tempMin").innerHTML="T. Min: "+parsed.tl+'º';
-											g1.refresh(parsed.k);
-															
-											if (parsed.cec>0) {
-												document.getElementById("cec").innerHTML=parsed.cec+"<br>kWh";
-											}else{
-												if(parsed.end==0){
-													document.getElementById("cec").innerHTML="";
-												}else{
-													document.getElementById("cec").innerHTML="0.0<br>kWh";
-												}
-											}
-							
-																																			
-											if (parsed.ch== "0") {
-												document.getElementById("charger").src="images/ioniq_not_charge.png";
-												document.getElementById("endcharge").innerHTML='';
-											}
-											else if (parsed.ch== "1") {
-											  document.getElementById("charger").src="images/ioniq_charge.png";
-												
-												if(parsed.end%60<10){
-													zero="0";
-												}else if (parsed.end % 60){
-													zero="";
-												}
-												
-												if(parsed.end==0){
-													document.getElementById("endcharge").innerHTML="Conectado al cargador";
-												}else{
-																								
-													document.getElementById("endcharge").innerHTML="Tiempo para finalizar: "+Math.floor(parsed.end/ 60)+':'+zero+(parsed.end% 60)+' h';
-												}
-												
-											
-											}
-											
-											if (parsed.f== "1") {
-												document.getElementById("fan").src="images/fan1.gif";
-											}
-											else {
-												document.getElementById("fan").src="images/FFFFFF-0.0.png";
-											}
-										
-										
-										}		
-									}
+				if (parsed.cec>0) {
+					document.getElementById("cec").innerHTML=parsed.cec+"<br>kWh";
+				}else{
+					if(parsed.end==0){
+						document.getElementById("cec").innerHTML="";
+					}else{
+						document.getElementById("cec").innerHTML="0.0<br>kWh";
+					}
+				}
+
+																												
+				if (parsed.ch== "0") {
+					document.getElementById("charger").src="images/ioniq_not_charge.png";
+					document.getElementById("endcharge").innerHTML='';
+				}
+				else if (parsed.ch== "1") {
+				  document.getElementById("charger").src="images/ioniq_charge.png";
+					
+					if(parsed.end%60<10){
+						zero="0";
+					}else if (parsed.end % 60){
+						zero="";
+					}
+					
+					if(parsed.end==0){
+						document.getElementById("endcharge").innerHTML="Conectado al cargador";
+					}else{
+																	
+						document.getElementById("endcharge").innerHTML="Tiempo para finalizar: "+Math.floor(parsed.end/ 60)+':'+zero+(parsed.end% 60)+' h';
+					}
+					
+				
+				}
+				
+				if (parsed.f== "1") {
+					document.getElementById("fan").src="images/fan1.gif";
+				}
+				else {
+					document.getElementById("fan").src="images/FFFFFF-0.0.png";
+				}
+			
+			
+			}		
+		}
 									
         function onFailure(invocationContext, errorCode, errorMessage) {
-										var errDiv = document.getElementById("error");
-										errDiv.textContent = "Could not connect to WebSocket server";
-										errDiv.style.display = "block";
-								}
+			var errDiv = document.getElementById("error");
+			errDiv.textContent = "Could not connect to WebSocket server";
+			errDiv.style.display = "block";
+		}
         
         // set callback handlers
         client.onConnectionLost = onConnectionLost;
@@ -162,8 +169,8 @@
         // connect the client
         client.connect({
         useSSL: true,
-        userName: usuario,
-        password: contrasena,
+        userName: mqttUser,
+        password: mqttPsw,
         onSuccess: onConnect,
         onFailure: onFailure
         });             
@@ -204,11 +211,8 @@
         <div id="endcharge" style=" color:#96D8F7; text-anchor: middle; text-align:center; font-family: arial; font-size: 24px; fill-opacity: 1; position:absolute; top:610px; left:0px; width:400px; height:30px; border-style: none;">Waiting data to MQTT server</div>
 		<div id="date" style=" color:#96D8F7; text-anchor: middle; text-align:left; font-family: arial; font-size: 12px; fill-opacity: 1; position:absolute; top:650px; left:20px; width:100px; height:14px; border-style: none;"></div>
         <div id="g1" style="color:#96D8F7; position:absolute; top:250px; left:5px;  width:100px; height:100px; border-style: none;"></div>
-        <!--
-            <div id="kms" style=" color:#42bee0; text-anchor: middle; text-align:right; font-family: arial; font-size: 24px; font-weight: bold; fill-opacity: 1; position:absolute; top:150px; left:20; width:340px; height:60px; border-style: none;"></div>
-            -->
         <div id="t1" style="position:absolute; top:285px; left:80px; width:260px; fill-opacity:.90; font-family: Arial, serif; font-size: 34px; color:#999999; font-weight: bold">
-											<svg id="fillgauge1" width="97%" height="240"></svg>
+            <svg id="fillgauge1" width="97%" height="240"></svg>
         <div>
         </p>
         <script language="JavaScript">
