@@ -24,7 +24,7 @@
 <script id="source" language="javascript" type="text/javascript">
     // NOTE: Adjust settings below to match your configuration
     //var isKm=1, maxRangeKm=63, maxRangeMiles=39; // Ioniq PHEV 2017-2019
-    var isKm = 0, maxRangeKm = 280, maxRangeMiles = 170; // Ioniq EV   2017-2019
+    var isKm = 0, maxRangeKm = 280, maxRangeMiles = 170; // Ioniq EV 2017-2019
     var mqttUser = 'ioniq';
     var mqttPsw = 'my-psw';
     var mqttTopic = 'ioniq/bso';
@@ -197,11 +197,10 @@
     }
 </style>
 <body>
-<div id="ioniq" style="position:absolute; top:0px; left:5px;  fill-opacity:1; border-style: none;">
-    <img id="charger" src="images/ioniq_not_charge.png" border=0></div>
+<div id="ioniq"
+     style="position:absolute; top:0px; left:5px;  fill-opacity:1; border-style: none;"><img id="charger" src="images/ioniq_not_charge.png" border=0></div>
 <div id="cec"
      style=" color:#96D8F7; text-anchor: middle; font-weight: 400; text-align:center; font-family: arial; font-size: 28px;  fill-opacity: 1; position:absolute;  top:250px; left:230px; width:250px; height:34px; border-style: none;"></div>
-
 <div id="power"
      style=" color:#42bee0; text-anchor: middle; text-align:center; font-family: arial; font-size: 24px;  fill-opacity: 1; position:absolute; top:530px; left:10px; width:125px; height:30px; border-style: none;">
     --- kW
@@ -228,8 +227,7 @@
     ---º
 </div>
 <div id="fanimg"
-     style="color:#96D8F7; position:absolute; top:572px; left:140px;  width:100px; height:100px; border-style: none;">
-    <img id="fan" src="images/FFFFFF-0.0.png" width=20 border=0></div>
+     style="color:#96D8F7; position:absolute; top:572px; left:140px;  width:100px; height:100px; border-style: none;"><img id="fan" src="images/FFFFFF-0.0.png" width=20 border=0></div>
 
 <div id="endcharge"
      style=" color:#96D8F7; text-anchor: middle; text-align:center; font-family: arial; font-size: 24px; fill-opacity: 1; position:absolute; top:610px; left:0px; width:400px; height:30px; border-style: none;">
@@ -262,8 +260,8 @@
             config4.waveCount = 2;
             var gauge1 = loadLiquidFillGauge("fillgauge1", 0, config4);
         </script>
-        <p>
-            <br>
-            <br>
+        <p><br><br></p>
+    </div>
+</div>
 </body>
 </html>
