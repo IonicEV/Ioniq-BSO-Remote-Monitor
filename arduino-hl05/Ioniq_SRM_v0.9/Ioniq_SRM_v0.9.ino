@@ -180,7 +180,7 @@ void loop() {
   }
 
 #ifdef ENABLE_HELTEC_WIFI_Kit_8
-  display.print("Request 2101    ", 2);
+  display.print("OBD update      ", 2);
 #endif
 
   Serial.println("======================");
@@ -203,6 +203,7 @@ void loop() {
 #ifdef ENABLE_HELTEC_WIFI_Kit_8
     display.print(cecInitialMsg, 1, 0);
     display.print(cecDecimalMsg, 1, 8);
+    display.print("Publish         ", 2);
     display.print("  Battery: ", 3);
     display.print(bsoMsg, 3, 11);
 #endif
@@ -227,6 +228,10 @@ void loop() {
         String currentTime = getTimeStamp(timeClient.getEpochTime());
         String totalTime = getTimeDifference(timeClient.getEpochTime() - timeInitialEpoch);
         createTelegram(sendBuffer, SEND_BUF_LEN, ioniq, timeInitial, currentTime, totalTime);
+#ifdef ENABLE_HELTEC_WIFI_Kit_8
+        delay(1000);
+        display.print("Send Telegram   ", 2);
+#endif
         telegramSend(sendBuffer);
       }
       ioniq->resetToCharged();
@@ -241,7 +246,13 @@ void loop() {
     Serial.println(ResetCount);
   }
 
+  Serial.print("Sleeping ...");
+#ifdef ENABLE_HELTEC_WIFI_Kit_8
+  delay(1000);
+  display.print("Sleeping ...    ", 2);
+#endif
   delay(sleepTime);
+  Serial.println("Wake up!");
 
   if (ResetCount >= 10) { // If data is corrupted or incorrect, restart ESP. Pending assigning a PIN to RESET.
     //ESP.reset();  // Not run in Wifi Kit 8 form Heltec
@@ -316,9 +327,9 @@ void publishMQTTMessage(char *message) {
     Serial.println("Publishing to MQTT");
     if (!mqttClient.publish(MQTT_NODE, sendBuffer, true)) {
       Serial.println("MQTT publish error!!");
-    } else {
-      Serial.println("MQTT connect failed!");
     }
+  } else {
+    Serial.println("MQTT connect failed!");
   }
 }
 

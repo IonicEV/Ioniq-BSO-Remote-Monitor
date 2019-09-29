@@ -260,8 +260,8 @@ void loop() {
 
   Serial.print("Sleeping ...");
 #ifdef ENABLE_HELTEC_WIFI_Kit_32
-    delay(1000);
-    display.print("Sleeping ...    ", 2);
+  delay(1000);
+  display.print("Sleeping ...    ", 2);
 #endif
   delay(sleepTime);
   Serial.println("Wake up!");

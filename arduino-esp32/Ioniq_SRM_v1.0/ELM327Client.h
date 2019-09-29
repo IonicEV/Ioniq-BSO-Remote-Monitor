@@ -79,7 +79,7 @@ class EML327Client {
     //For clean serial buffer
     Serial.println("======================");
     Serial.print("Sending OBD command: "); Serial.println(obdCommand);
-    if (_isTestOBD) {  elm327Buffer[0] = 0; return 0; }
+    if (_isTestOBD) {  delay(1000); elm327Buffer[0] = 0; return 0; }
     int retry = 5;
     bool ok = false;
     do {

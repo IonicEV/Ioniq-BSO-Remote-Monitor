@@ -11,8 +11,8 @@
 #define HC05_RESET 16  //Arduino pin connected to Reset of HC-05 (reset with LOW)
 #define HC05_STATE 12  //Arduino pin connected to pin 24 status of HC-05 (Low not connected, HIGH connected)
 
-#define HC05_KIT8_txD    0  //Arduino pin connected to Rx of HC-05
-#define HC05_KIT8_rxD   15  //Arduino pin connected to Tx of HC-05
+#define HC05_KIT8_txD   15  //Arduino pin connected to Rx of HC-05
+#define HC05_KIT8_rxD    0  //Arduino pin connected to Tx of HC-05
 #define HC05_KIT8_CMD   14  //Arduino pin connected to CMD (34) of HC-05 (enter AT Mode with HIGH)
 #define HC05_KIT8_RESET 12  //Arduino pin connected to Reset of HC-05 (reset with LOW)
 #define HC05_KIT8_STATE 13  //Arduino pin connected to pin 24 status of HC-05 (Low not connected, HIGH connected)
