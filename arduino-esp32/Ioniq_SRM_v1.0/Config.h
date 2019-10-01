@@ -43,15 +43,20 @@ replace with: architectures=esp8266,esp32
 // ***************************************************************************
 // IMPORTANT: Enable wifi and OBD fot test or work in Ioniq
 // ***************************************************************************
-#ifdef ENABLE_TEST_ELM327  /Enable wifi for test in your LAN
+#ifdef ENABLE_TEST_ELM327  //Enable wifi for test in your LAN
 
-#define SLEEP_TIME 5000  //Sllep time between OBD requests
+#define SLEEP_TIME        5000  //Sleep time between OBD requests
 #define WIFI_SSID  "myHome"
 #define WIFI_PSW   "myHome-psw"
 
 #else  //Enable wifi and IP for OBD in your Ioniq
 
-#define SLEEP_TIME        15000  //Sllep time between OBD requests
+#ifdef ENABLE_TEST_OBD
+#define SLEEP_TIME        5000  //Sleep time between OBD requests
+#else
+#define SLEEP_TIME        15000  //Sleep time between OBD requests
+#endif
+
 #define WIFI_SSID  "YourWIFI_SSIDIoniq"
 #define WIFI_PSW = "WIFI_PSWWifiIoniq"
 

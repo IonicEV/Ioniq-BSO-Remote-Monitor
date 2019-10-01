@@ -18,6 +18,15 @@
 #include "Config.h"
 #include "Ioniq.h"
 
+bool SynchronizeTime();
+void stopLoop(char *message);
+String getTimeDifference(int difference);
+String getTimeStamp(int epochTime);
+void telegramSend(char *telegramText);
+char* createTelegram(char *dest, int len, Ioniq *ioniq, String &timeInitial, String &timeCurrent, String &totalTime);
+void createMQTTmessage(char *dest, int len, Ioniq *ioniq);
+void publishMQTTMessage(char *message);
+
 // ***************************************************************************
 // GLOBAL VARS
 // ***************************************************************************
@@ -52,16 +61,6 @@ int timeInitialEpoch;
 char bsoMsg[16];
 char cecInitialMsg[16];
 char cecDecimalMsg[16];
-
-bool SynchronizeTime();
-void stopLoop(char *message);
-String getTimeDifference(int difference);
-String getTimeStamp(int epochTime);
-void telegramSend(char *telegramText);
-char* createTelegram(char *dest, int len, Ioniq *ioniq, String &timeInitial, String &timeCurrent, String &totalTime);
-void createMQTTmessage(char *dest, int len, Ioniq *ioniq);
-void publishMQTTMessage(char *message);
-
 
 // ***************************************************************************
 // SETUP

@@ -14,8 +14,10 @@ The following config changes would work on Heltec 8266 and ESP32 variants 128x32
 OLED.cpp
 find line: sendcommand(0x3F);
 replace with: sendcommand(0x1F);
+
 find line: sendcommand(0x12);;
 replace with: sendcommand(0x02);
+
 library.properties
 find line: architectures=esp8266
 replace with: architectures=esp8266
@@ -48,8 +50,8 @@ replace with: architectures=esp8266
 // IMPORTANT: Enable wifi and OBD fot test or work in Ioniq
 // ***************************************************************************
 #ifdef ENABLE_TEST_ELM327  /Enable wifi for test in your LAN
-#define SLEEP_TIME        5000  //Sllep time between OBD requests
-#define TEST_LINE 1
+
+#define SLEEP_TIME        5000  //Sleep time between OBD requests
 #define WIFI_SSID  "mySSID"
 #define WIFI_PSW "mypws"
 #define OBD_IP    "192.168.1.200"  //IP address OBD device
@@ -57,8 +59,12 @@ replace with: architectures=esp8266
 
 #else  //Enable wifi and IP for OBD in your Ioniq
 
-#define SLEEP_TIME        15000  //Sllep time between OBD requests
-#define TEST_LINE 0
+#ifdef ENABLE_TEST_OBD
+#define SLEEP_TIME        5000  //Sleep time between OBD requests
+#else
+#define SLEEP_TIME        15000  //Sleep time between OBD requests
+#endif
+
 #define WIFI_SSID  "YourWIFI_SSIDIoniq"
 #define WIFI_PSW = "WIFI_PSWWifiIoniq"
 #define OBD_IP    "192.168.1.200"  //IP address OBD device

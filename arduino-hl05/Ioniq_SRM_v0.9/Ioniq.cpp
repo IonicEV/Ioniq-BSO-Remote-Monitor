@@ -160,13 +160,23 @@ bool Ioniq::processOBD(OBDCommand obdCommand, char *obdResponse) {
           voltageDecimal = 397.80;
           intCharger = 0;
         }
-    
-    
-        if (bsoDecimal >= 20) {     //Rule of three calculator for mileage estimate in electrical
-          intKms = (bsoDecimal - 20) * 0.7875;
-        } else {
-          intKms = 0;
+
+        switch(_model) {
+          case IONIQ_PHEV:
+            if (bsoDecimal >= 20) {     //Rule of three calculator for mileage estimate in electrical
+              intKms = (bsoDecimal - 20) * 0.7875;
+            } else {
+              intKms = 0;
+            }
+            break;
+          case IONIQ_EV17:
+            intKms = IONIQ_EV17_RANGE_KM/100.00 * bsoDecimal;
+            break;
+          case IONIQ_EV20:
+            intKms = IONIQ_EV20_RANGE_KM/100.00 * bsoDecimal;
+            break;                     
         }
+        
         powerDecimal = (voltageDecimal * currentDecimal) / 1000; //Calculate power in kW
         return 1;
       }
