@@ -49,7 +49,7 @@ replace with: architectures=esp8266
 // ***************************************************************************
 // IMPORTANT: Enable wifi and OBD fot test or work in Ioniq
 // ***************************************************************************
-#ifdef ENABLE_TEST_ELM327  /Enable wifi for test in your LAN
+#ifdef ENABLE_TEST_ELM327  //Enable wifi for test in your LAN
 
 #define SLEEP_TIME        5000  //Sleep time between OBD requests
 #define WIFI_SSID  "mySSID"
