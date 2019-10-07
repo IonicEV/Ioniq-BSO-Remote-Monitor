@@ -4,6 +4,7 @@
 #define ENABLE_TEST_OBD     1   //If enabled, OBD communication is bypassed
 #define IONIQ_MODEL IONIQ_EV17  // Refer to IONIQ_Model enum in Ionic.h to pick your model
 //#define ENABLE_HELTEC_WIFI_Kit_32  //If defined, enable for compile HELTEC_WIFI_Kit_32
+//#define USE_VENOM_TTGO_OLED        //If defined, overrides Kit32 with Alternative OLED pin assignment
 
 #ifdef ENABLE_HELTEC_WIFI_Kit_32
 /*
@@ -23,10 +24,15 @@ replace with: architectures=esp8266,esp32
 */
 #include <Wire.h>
 #include <OLED.h>
-#define OLED_RST 16
-#define OLED_SDA 4
-#define OLED_SCL 15
-#endif
+#ifdef USE_VENOM_TTGO_OLED
+#define OLED_SDA 5  //LILYGO TTGO (w/battery)
+#define OLED_SCL 4  //LILYGO TTGO (w/battery)
+#else
+#define OLED_RST 16 //KIT32
+#define OLED_SDA 4  //KIT32
+#define OLED_SCL 15 //KIT32
+#endif  //USE_VENOM_TTGO_OLED
+#endif  //ENABLE_HELTEC_WIFI_Kit_32
 
 #define MQTT_BUF_LEN 256
 #define RECV_BUF_LEN 128

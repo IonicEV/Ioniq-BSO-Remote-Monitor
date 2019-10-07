@@ -74,10 +74,12 @@ void setup()  {
   // Setup: OLED Screen Wifi Kit_32
   // ***************************************************************************
 #ifdef ENABLE_HELTEC_WIFI_Kit_32
+#ifndef USE_VENOM_TTGO_OLED
   pinMode(OLED_RST, OUTPUT);
   digitalWrite(OLED_RST, LOW);   // turn D2 low to reset OLED
   delay(50);
   digitalWrite(OLED_RST, HIGH);   // while OLED is running, must set D2 in high
+#endif  //USE_VENOM_TTGO_OLED
   display.begin();
 
   // Intro screen
