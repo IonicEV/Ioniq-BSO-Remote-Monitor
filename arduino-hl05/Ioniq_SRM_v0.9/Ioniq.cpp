@@ -134,7 +134,7 @@ bool Ioniq::processOBD(OBDCommand obdCommand, char *obdResponse) {
         if(cecInitial < 0) {
           cecInitial = cecDecimal;
         }
-        return 1;
+        return true;
       }
     }
   } else if (OBD_2105 == obdCommand) {
