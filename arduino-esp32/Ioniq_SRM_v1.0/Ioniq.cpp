@@ -70,7 +70,7 @@ bool Ioniq::isCharging() {
 void Ioniq::resetToCharged() {
   cecInitial = cecDecimal;
   bsoInitial = bsoDecimal;
-  envioInforme = 0;
+  notify = false;
 }
 
 bool Ioniq::processOBD(OBDCommand obdCommand, char *obdResponse) {
@@ -126,7 +126,7 @@ bool Ioniq::processOBD(OBDCommand obdCommand, char *obdResponse) {
         }
         if (intCharger == 1 & powerDecimal < 0) { //Estimation of charge time
           endCharge = ((((100 - bsoDecimal) * _batteryCapacity) / 100) / ((powerDecimal * -1) / 60));
-          envioInforme = 1;
+          notify = true;
         } else {
           endCharge = 0;
         }

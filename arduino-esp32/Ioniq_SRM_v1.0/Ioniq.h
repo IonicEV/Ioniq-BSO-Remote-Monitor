@@ -71,7 +71,7 @@ public:
   char* extractSubstring(char* dest, char* source, char* pattern, int startPos , int endPos);
   char* testString(OBDCommand obdCommand);
   
-  int intFan;
+  int   intFan;
   float bsoDecimal;
   float currentDecimal;
   float currentAMP1Decimal;
@@ -84,9 +84,9 @@ public:
   float cecDecimal;
   float cecInitial = -1;
   float bsoInitial = -1;
-  int intCharger;
-  int endCharge;
-  int intKms;
-  int envioInforme = 0;;
+  int   intCharger;
+  int   endCharge;
+  int   intKms;
+  bool   notify;
 };
 #endif

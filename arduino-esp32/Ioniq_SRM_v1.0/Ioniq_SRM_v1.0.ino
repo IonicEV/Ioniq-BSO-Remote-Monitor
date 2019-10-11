@@ -241,7 +241,7 @@ void loop() {
     }
 
 #ifdef ENABLE_TELEGRAM
-    if (!ioniq->isCharging() && ioniq->envioInforme) {
+    if (!ioniq->isCharging() && ioniq->notify) {
 
       if ((timeClient.getEpochTime() - timeInitialEpoch) > 30
           && ioniq->bsoInitial > 10 && ioniq->bsoInitial < ioniq->bsoDecimal
