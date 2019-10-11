@@ -178,7 +178,7 @@ bool Ioniq::processOBD(OBDCommand obdCommand, char *obdResponse) {
         }
         
         powerDecimal = (voltageDecimal * currentDecimal) / 1000; //Calculate power in kW
-        return 1;
+        return true;
       }
     }    
   }
