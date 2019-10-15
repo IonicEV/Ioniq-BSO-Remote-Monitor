@@ -141,7 +141,7 @@ void setup()  {
   Serial.println("OBD Connected");
 
 #ifdef ENABLE_HELTEC_WIFI_Kit_8
-  display.print("  OBD Connected  ", 3);
+  display.print("  OBD Connected ", 3);
 #endif
 
   delay(500);

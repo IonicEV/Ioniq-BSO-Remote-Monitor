@@ -166,7 +166,7 @@ restart:
   Serial.println("OBD connected");
 
 #ifdef ENABLE_HELTEC_WIFI_Kit_32
-  display.print("  OBD Connected  ", 3);
+  display.print("  OBD Connected ", 3);
 #endif
 
   delay(500);
