@@ -4,9 +4,11 @@
 
   https://github.com/Wekoyote/Ioniq-BSO-Remote-Monitor
 
-  You would need to download 2 files from forked repository (merge to master is pending):
-  https://github.com/IonicEV/arduino-esp32/tree/master/libraries/BluetoothSerial/src
-  backup original files and replace BluetoothSerial.h and BluetoothSerial.cpp (the only files in this folder) in you ESP32 package with ones from forked repo
+  Latest espressif/arduino-esp32 repository contains the Master mode changes.
+  If you use older version, you would need to download 2 files from the master branch:
+  https://github.com/espressif/arduino-esp32/tree/master/libraries/BluetoothSerial
+  backup original files and replace BluetoothSerial.h and BluetoothSerial.cpp (the only files in this folder)
+  in you ESP32 package with new ones from master repo
   
   Select you ESP32 board and select Partition Scheme: "NO OTA (2MB APP/2MG SPIFFS)"
   
